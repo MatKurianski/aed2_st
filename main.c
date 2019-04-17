@@ -32,11 +32,11 @@ void inicializar_grafo(Grafo *g, int max) {
     g->inicio = NULL;
     
     int i;
-    for(i = 0; i < max;) {
+    for(i = 1; i <= max;) {
         Vertice *v = (Vertice*) malloc(sizeof(Vertice));
         v->cor = BRANCO;
         v->chave = i++;
-        v->ordem, v->minor = -1;
+        v->ordem = v->minor = -1;
         v->pai = NULL;
         v->prox = NULL;
         v->vizinhos = NULL;
@@ -82,13 +82,13 @@ void adiciona_aresta_bidirecional(Grafo g, int vertice, int vizinho) {
     adiciona_aresta(g, vizinho, vertice);
 }
 
-void DFS_visit(Grafo g, Vertice *vertice) {
+void DFS_visit(Vertice *vertice) {
     vertice->cor = CINZA;
 
     Aresta *aresta = vertice->vizinhos;
     while(aresta) {
         Vertice *vizinho = aresta->vizinho;
-        if(vizinho->cor == BRANCO) DFS_visit(g, vizinho);
+        if(vizinho->cor == BRANCO) DFS_visit(vizinho);
         aresta = aresta->prox;
     }
     vertice->cor = PRETO;
@@ -99,19 +99,60 @@ void DFS(Grafo g) {
     Vertice *vertice = g.inicio;
 
     while(vertice) {
-        if(vertice->cor == BRANCO) DFS_visit(g, vertice);
+        if(vertice->cor == BRANCO) DFS_visit(vertice);
         vertice = vertice->prox;
     }
+}
+
+void DFST_visit(Vertice *vertice, int *contador) {
+    vertice->cor = CINZA;
+    vertice->minor = vertice->ordem = *contador;
+    *contador = *contador + 1;
+
+    Aresta *aresta = vertice->vizinhos;
+    while(aresta) {
+        Vertice *vizinho = aresta->vizinho;
+        if(vizinho->cor == BRANCO) {
+            vizinho->pai = vertice;
+            DFST_visit(vizinho, contador);
+        }
+
+        if(vertice->minor > vizinho->minor && vertice->pai != vizinho) {
+            vertice->minor = vizinho->minor;
+        }
+        aresta = aresta->prox;
+    }
+    vertice->cor = PRETO;
+}
+
+bool DFST(Grafo g) {
+    if(!g.inicio) return false;
+    Vertice *atual = g.inicio;
+    atual->pai = NULL;
+    int contador = 1;
+    
+    DFST_visit(atual, &contador);
+
+    while(atual) {
+        if (
+            (atual->cor == BRANCO || atual->minor >= atual->ordem) &&
+            atual->chave != 1
+        ) return false;
+        atual = atual->prox;
+    }
+
+    return true;
 }
 
 int main() {
     Grafo g;
     inicializar_grafo(&g, 3);
 
-    adiciona_aresta(g, 1, 2);
-    adiciona_aresta(g, 2, 3);
-    adiciona_aresta(g, 3, 1);
+    adiciona_aresta_bidirecional(g, 1, 2);
+    adiciona_aresta_bidirecional(g, 2, 3);
+    adiciona_aresta_bidirecional(g, 3, 1);
 
-    DFS(g);
+    if(DFST(g)) puts("É biconexo!");
+
     return 0;
 }
