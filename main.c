@@ -192,8 +192,8 @@ void DFS(Grafo g) {
 
 void DFST_visit(Vertice *vertice, int *contador, ListaLigada* l) {
     vertice->cor = CINZA;
-    vertice->minor = vertice->ordem = *contador;
     insere_elemento_no_final(l, vertice);
+    vertice->minor = vertice->ordem = *contador;
     *contador = *contador + 1;
 
     Aresta *aresta = vertice->vizinhos;
@@ -251,34 +251,58 @@ ListaLigada st_numeracao(ListaLigada lista_de_origens) {
         Vertice* pai = vertice->pai;
         No* pai_lista = buscar_no(lista_nova, pai);
 
-        if(vertice->minor <= pai_lista->vertice->ordem) {
+        if(vertice->minor <= pai_lista->vertice->ordem) 
             insere_elemento(&lista_nova, vertice, pai_lista, "esq");
-        } else {
+        else
             insere_elemento(&lista_nova, vertice, pai_lista, "dir");
-        }
         atual = atual->dir;
     }
-
     return lista_nova;
 }
 
 int main() {
     Grafo g;
-    inicializar_grafo(&g, 4);
-    adiciona_aresta_bidirecional(g, 1, 2);
-    adiciona_aresta_bidirecional(g, 2, 3);
-    adiciona_aresta_bidirecional(g, 3, 4);
-    adiciona_aresta_bidirecional(g, 4, 1);
+    inicializar_grafo(&g, 6);
+
+    adiciona_aresta(g, 1, 2);
+    adiciona_aresta(g, 1, 6);
+
+    adiciona_aresta(g, 2, 3);
+    adiciona_aresta(g, 2, 6);
+    adiciona_aresta(g, 2, 1);
+
+    adiciona_aresta(g, 3, 4);
+    adiciona_aresta(g, 3, 5);
+    adiciona_aresta(g, 3, 6);
+    adiciona_aresta(g, 3, 2);
+
+    adiciona_aresta(g, 4, 5);
+    adiciona_aresta(g, 4, 6);
+    adiciona_aresta(g, 4, 3);
+
+    adiciona_aresta(g, 5, 3);
+    adiciona_aresta(g, 5, 4);
+
+    adiciona_aresta(g, 6, 1);
+    adiciona_aresta(g, 6, 2);
+    adiciona_aresta(g, 6, 3);
+    adiciona_aresta(g, 6, 4);
+
+    // adiciona_aresta(g, 1, 2);
+    // adiciona_aresta(g, 2, 3);
+    // adiciona_aresta(g, 3, 4);
+    // adiciona_aresta(g, 4, 1);
+
 
     ListaLigada lista_old;
-    DFST(g, &lista_old);
+    if (DFST(g, &lista_old)) {
+        ListaLigada lista = st_numeracao(lista_old);
 
-    ListaLigada lista = st_numeracao(lista_old);
-
-    No* atual = lista.inicio;
-    while(atual) {
-        printf("%i\n", atual->vertice->chave);
-        atual = atual->dir;
+        No* atual = lista.inicio;
+        while(atual) {
+            printf("%i : %i\n", atual->vertice->chave, atual->vertice->minor);
+            atual = atual->dir;
+        }
     }
 
     return 0;
