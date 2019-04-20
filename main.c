@@ -11,6 +11,8 @@ typedef enum COR {
 typedef struct vertice Vertice;
 typedef struct aresta Aresta;
 
+// GRAFO
+
 struct vertice {
     Cor cor;
     int chave, minor, ordem;
@@ -28,19 +30,65 @@ typedef struct {
     Vertice* inicio;
 } Grafo;
 
+// LISTA LIGADA RESULTANTE
+
+typedef struct estrutura {
+    Vertice* vertice;
+    struct estrutura* esq;
+    struct estrutura* dir;
+} No;
+
+typedef struct {
+    No* inicio;
+    No* fim;
+} ListaLigada;
+
+// Algoritmos da Lista Ligada
+
+void inicializar_lista(ListaLigada *l) {
+    l->inicio = NULL;
+    l->fim = NULL;
+}
+
+void insere_elemento_no_final(ListaLigada *l, Vertice *v) {
+    No* novo = (No*) malloc(sizeof(No));
+    novo->vertice = v;
+    novo->esq = novo->dir = NULL;
+
+    if(l->inicio == NULL) l->inicio = novo;
+    else {
+        No* atual = l->fim;
+        atual->dir = novo;
+        novo->esq = atual;
+    }
+    l->fim = novo;
+}
+
+void insere_elemento(ListaLigada *l, Vertice *v, Vertice *pai) {
+    if(l->inicio == NULL || pai == NULL) {
+        insere_elemento_no_final(l, v);
+        return;
+    }
+}
+
+// Algoritmos do grafo
+
+Vertice* criaVertice(int chave) {
+    Vertice *v = (Vertice*) malloc(sizeof(Vertice));
+    v->cor = BRANCO;
+    v->chave = chave;
+    v->ordem = v->minor = -1;
+    v->pai = NULL;
+    v->prox = NULL;
+    v->vizinhos = NULL;
+    return v;
+}
+
 void inicializar_grafo(Grafo *g, int max) {
     g->inicio = NULL;
-    
     int i;
     for(i = 1; i <= max;) {
-        Vertice *v = (Vertice*) malloc(sizeof(Vertice));
-        v->cor = BRANCO;
-        v->chave = i++;
-        v->ordem = v->minor = -1;
-        v->pai = NULL;
-        v->prox = NULL;
-        v->vizinhos = NULL;
-
+        Vertice *v = criaVertice(i++);
         if(g->inicio == NULL) g->inicio = v;
         else {
             Vertice *atual = g->inicio;
