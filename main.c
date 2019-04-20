@@ -190,10 +190,9 @@ void DFS(Grafo g) {
     }
 }
 
-void DFST_visit(Vertice *vertice, int *contador, ListaLigada* l) {
+void DFST_visit(Vertice *vertice, int *contador) {
     vertice->cor = CINZA;
     vertice->minor = vertice->ordem = *contador;
-    insere_elemento_no_final(l, vertice);
     *contador = *contador + 1;
 
     Aresta *aresta = vertice->vizinhos;
@@ -201,7 +200,7 @@ void DFST_visit(Vertice *vertice, int *contador, ListaLigada* l) {
         Vertice *vizinho = aresta->vizinho;
         if(vizinho->cor == BRANCO) {
             vizinho->pai = vertice;
-            DFST_visit(vizinho, contador, l);
+            DFST_visit(vizinho, contador);
         }
 
         if(vertice->minor > vizinho->minor && vertice->pai != vizinho) {
@@ -212,14 +211,13 @@ void DFST_visit(Vertice *vertice, int *contador, ListaLigada* l) {
     vertice->cor = PRETO;
 }
 
-bool DFST(Grafo g, ListaLigada *l) {
+bool DFST(Grafo g) {
     if(!g.inicio) return false;
-    inicializar_lista(l);
     Vertice *atual = g.inicio;
     atual->pai = NULL;
     int contador = 1;
     
-    DFST_visit(atual, &contador, l);
+    DFST_visit(atual, &contador);
 
     while(atual) {
         if (
@@ -232,53 +230,19 @@ bool DFST(Grafo g, ListaLigada *l) {
     return true;
 }
 
-ListaLigada st_numeracao(ListaLigada lista_de_origens) {
-    ListaLigada lista_nova;
-    inicializar_lista(&lista_nova);
-
-    No* atual = lista_de_origens.inicio;
-    Vertice* s = atual->vertice;
-    atual = atual->dir;
-    Vertice* t = atual->vertice;
-
-    insere_elemento_no_final(&lista_nova, s);
-    insere_elemento_no_final(&lista_nova, t);
-
-    atual = atual->dir; // terceiro elemento
-
-    while(atual) {
-        Vertice* vertice = atual->vertice;
-        Vertice* pai = vertice->pai;
-        No* pai_lista = buscar_no(lista_nova, pai);
-
-        if(vertice->minor <= pai_lista->vertice->ordem) {
-            insere_elemento(&lista_nova, vertice, pai_lista, "esq");
-        } else {
-            insere_elemento(&lista_nova, vertice, pai_lista, "dir");
-        }
-        atual = atual->dir;
-    }
-
-    return lista_nova;
-}
-
 int main() {
-    Grafo g;
-    inicializar_grafo(&g, 4);
-    adiciona_aresta_bidirecional(g, 1, 2);
-    adiciona_aresta_bidirecional(g, 2, 3);
-    adiciona_aresta_bidirecional(g, 3, 4);
-    adiciona_aresta_bidirecional(g, 4, 1);
+    ListaLigada l;
+    inicializar_lista(&l);
+    insere_elemento_no_final(&l, criaVertice(0));
+    insere_elemento_no_final(&l, criaVertice(1));
+    Vertice* v = criaVertice(2);
+    insere_elemento_no_final(&l, v);
+    insere_elemento(&l, criaVertice(3), buscar_no(l, v), "dir");
 
-    ListaLigada lista_old;
-    DFST(g, &lista_old);
-
-    ListaLigada lista = st_numeracao(lista_old);
-
-    No* atual = lista.inicio;
+    No* atual = l.inicio;
     while(atual) {
-        printf("%i\n", atual->vertice->chave);
-        atual = atual->dir;
+      printf("%i\n", atual->vertice->chave);
+      atual = atual->dir;
     }
 
     return 0;
