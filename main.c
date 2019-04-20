@@ -15,7 +15,7 @@ typedef struct aresta Aresta;
 
 struct vertice {
     Cor cor;
-    int chave, minor, ordem;
+    int chave, minor, ordem, st_number;
     Vertice *pai;
     Vertice *prox;
     Aresta *vizinhos;
@@ -115,7 +115,7 @@ Vertice* criaVertice(int chave) {
     Vertice *v = (Vertice*) malloc(sizeof(Vertice));
     v->cor = BRANCO;
     v->chave = chave;
-    v->ordem = v->minor = -1;
+    v->ordem = v->minor = v->st_number = -1;
     v->pai = NULL;
     v->prox = NULL;
     v->vizinhos = NULL;
@@ -178,7 +178,6 @@ void DFS_visit(Vertice *vertice) {
         aresta = aresta->prox;
     }
     vertice->cor = PRETO;
-    printf("%i\n", vertice->chave);
 }
 
 void DFS(Grafo g) {
@@ -257,6 +256,14 @@ ListaLigada st_numeracao(ListaLigada lista_de_origens) {
             insere_elemento(&lista_nova, vertice, pai_lista, "dir");
         atual = atual->dir;
     }
+
+    atual = lista_nova.inicio;
+    int contador = 1;
+    while(atual) {
+      atual->vertice->st_number = contador++;
+      atual = atual->dir;
+    }
+
     return lista_nova;
 }
 
@@ -294,7 +301,7 @@ int main() {
 
         No* atual = lista.inicio;
         while(atual) {
-            printf("%i : %i\n", atual->vertice->chave, atual->vertice->minor);
+            printf("%i : %i : %i\n", atual->vertice->chave, atual->vertice->minor, atual->vertice->st_number);
             atual = atual->dir;
         }
     }
