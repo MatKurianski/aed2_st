@@ -251,7 +251,7 @@ ListaLigada st_numeracao(ListaLigada lista_de_origens) {
         Vertice* pai = vertice->pai;
         No* pai_lista = buscar_no(lista_nova, pai);
 
-        if(vertice->minor <= pai_lista->vertice->ordem) 
+        if(vertice->minor <= pai_lista->esq->vertice->ordem) 
             insere_elemento(&lista_nova, vertice, pai_lista, "esq");
         else
             insere_elemento(&lista_nova, vertice, pai_lista, "dir");
@@ -287,12 +287,6 @@ int main() {
     adiciona_aresta(g, 6, 2);
     adiciona_aresta(g, 6, 3);
     adiciona_aresta(g, 6, 4);
-
-    // adiciona_aresta(g, 1, 2);
-    // adiciona_aresta(g, 2, 3);
-    // adiciona_aresta(g, 3, 4);
-    // adiciona_aresta(g, 4, 1);
-
 
     ListaLigada lista_old;
     if (DFST(g, &lista_old)) {
