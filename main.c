@@ -57,10 +57,10 @@ void inicializar_lista(ListaLigada *l) {
     l->fim = NULL;
 }
 
-No* buscar_no(ListaLigada *l, Vertice *v) {
-    No* atual = l->inicio;
+No* buscar_no(ListaLigada l, Vertice *v) {
+    No* atual = l.inicio;
     while(atual) {
-        if(atual->vertice == v) return v;
+        if(atual->vertice == v) return atual;
         atual = atual->dir;
     }
     return NULL;
@@ -231,14 +231,19 @@ bool DFST(Grafo g) {
 }
 
 int main() {
-    Grafo g;
-    inicializar_grafo(&g, 3);
+    ListaLigada l;
+    inicializar_lista(&l);
+    insere_elemento_no_final(&l, criaVertice(0));
+    insere_elemento_no_final(&l, criaVertice(1));
+    Vertice* v = criaVertice(2);
+    insere_elemento_no_final(&l, v);
+    insere_elemento(&l, criaVertice(3), buscar_no(l, v), "dir");
 
-    adiciona_aresta_bidirecional(g, 1, 2);
-    adiciona_aresta_bidirecional(g, 2, 3);
-    adiciona_aresta_bidirecional(g, 3, 1);
-
-    if(DFST(g)) puts("É biconexo!");
+    No* atual = l.inicio;
+    while(atual) {
+      printf("%i\n", atual->vertice->chave);
+      atual = atual->dir;
+    }
 
     return 0;
 }
