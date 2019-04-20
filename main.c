@@ -45,15 +45,29 @@ typedef struct {
 
 // Algoritmos da Lista Ligada
 
+No* criar_no(Vertice *v) {
+    No* novo = (No*) malloc(sizeof(No));
+    novo->vertice = v;
+    novo->esq = novo->dir = NULL;
+    return novo;
+} 
+
 void inicializar_lista(ListaLigada *l) {
     l->inicio = NULL;
     l->fim = NULL;
 }
 
+No* buscar_no(ListaLigada *l, Vertice *v) {
+    No* atual = l->inicio;
+    while(atual) {
+        if(atual->vertice == v) return v;
+        atual = atual->dir;
+    }
+    return NULL;
+}
+
 void insere_elemento_no_final(ListaLigada *l, Vertice *v) {
-    No* novo = (No*) malloc(sizeof(No));
-    novo->vertice = v;
-    novo->esq = novo->dir = NULL;
+    No* novo = criar_no(v);
 
     if(l->inicio == NULL) l->inicio = novo;
     else {
@@ -64,9 +78,33 @@ void insere_elemento_no_final(ListaLigada *l, Vertice *v) {
     l->fim = novo;
 }
 
-void insere_elemento(ListaLigada *l, Vertice *v, Vertice *pai) {
+void insere_elemento(ListaLigada *l, Vertice *v, No *pai, char* pos) {
     if(l->inicio == NULL || pai == NULL) {
         insere_elemento_no_final(l, v);
+        return;
+    }
+
+    No* novo = criar_no(v);
+    if(pos == "esq") {
+        if(pai->esq == NULL) pai->esq = l->inicio = novo;
+        else {
+            No* aux = pai->esq;
+            pai->esq = novo;
+            novo->esq = aux;
+            novo->dir = pai;
+            aux->dir = novo;
+        }
+    } else if(pos == "dir") {
+        if(pai->dir == NULL) pai->dir = l->fim = novo;
+        else {
+            No* aux = pai->dir;
+            pai->dir = novo;
+            novo->dir = aux;
+            novo->esq = pai;
+            aux->esq = novo;
+        }
+    } else {
+        puts("error");
         return;
     }
 }
