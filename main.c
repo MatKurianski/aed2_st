@@ -15,7 +15,8 @@ typedef struct aresta Aresta;
 
 struct vertice {
     Cor cor;
-    int chave, minor, ordem, st_number;
+    int minor, ordem, st_number;
+    char chave;
     Vertice *pai;
     Vertice *prox;
     Aresta *vizinhos;
@@ -111,7 +112,7 @@ void insere_elemento(ListaLigada *l, Vertice *v, No *pai, char* pos) {
 
 // Algoritmos do grafo
 
-Vertice* criaVertice(int chave) {
+Vertice* criaVertice(char chave) {
     Vertice *v = (Vertice*) malloc(sizeof(Vertice));
     v->cor = BRANCO;
     v->chave = chave;
@@ -125,7 +126,7 @@ Vertice* criaVertice(int chave) {
 void inicializar_grafo(Grafo *g, int max) {
     g->inicio = NULL;
     int i;
-    for(i = 1; i <= max;) {
+    for(i = 97; i < max+97;) {
         Vertice *v = criaVertice(i++);
         if(g->inicio == NULL) g->inicio = v;
         else {
@@ -223,7 +224,7 @@ bool DFST(Grafo g, ListaLigada *l) {
     while(atual) {
         if (
             (atual->cor == BRANCO || atual->minor >= atual->ordem) &&
-            atual->chave != 1
+            atual->ordem != 1
         ) return false;
         atual = atual->prox;
     }
@@ -271,29 +272,29 @@ int main() {
     Grafo g;
     inicializar_grafo(&g, 6);
 
-    adiciona_aresta(g, 1, 2);
-    adiciona_aresta(g, 1, 6);
+    adiciona_aresta(g, 'a', 'b');
+    adiciona_aresta(g, 'a', 'f');
 
-    adiciona_aresta(g, 2, 3);
-    adiciona_aresta(g, 2, 6);
-    adiciona_aresta(g, 2, 1);
+    adiciona_aresta(g, 'b', 'c');
+    adiciona_aresta(g, 'b', 'f');
+    adiciona_aresta(g, 'b', 'a');
 
-    adiciona_aresta(g, 3, 4);
-    adiciona_aresta(g, 3, 5);
-    adiciona_aresta(g, 3, 6);
-    adiciona_aresta(g, 3, 2);
+    adiciona_aresta(g, 'c', 'd');
+    adiciona_aresta(g, 'c', 'e');
+    adiciona_aresta(g, 'c', 'f');
+    adiciona_aresta(g, 'c', 'b');
 
-    adiciona_aresta(g, 4, 5);
-    adiciona_aresta(g, 4, 6);
-    adiciona_aresta(g, 4, 3);
+    adiciona_aresta(g, 'd', 'e');
+    adiciona_aresta(g, 'd', 'f');
+    adiciona_aresta(g, 'd', 'c');
 
-    adiciona_aresta(g, 5, 3);
-    adiciona_aresta(g, 5, 4);
+    adiciona_aresta(g, 'e', 'c');
+    adiciona_aresta(g, 'e', 'd');
 
-    adiciona_aresta(g, 6, 1);
-    adiciona_aresta(g, 6, 2);
-    adiciona_aresta(g, 6, 3);
-    adiciona_aresta(g, 6, 4);
+    adiciona_aresta(g, 'f', 'a');
+    adiciona_aresta(g, 'f', 'b');
+    adiciona_aresta(g, 'f', 'c');
+    adiciona_aresta(g, 'f', 'd');
 
     ListaLigada lista_old;
     if (DFST(g, &lista_old)) {
@@ -301,7 +302,8 @@ int main() {
 
         No* atual = lista.inicio;
         while(atual) {
-            printf("%i : %i : %i\n", atual->vertice->chave, atual->vertice->minor, atual->vertice->st_number);
+            Vertice* vertice_atual = atual->vertice;
+            printf("Chave: %c | Minor: %i | Ordem: %i | Numeracao ST: %i\n", vertice_atual->chave, vertice_atual->minor, vertice_atual->ordem, vertice_atual->st_number);
             atual = atual->dir;
         }
     }
