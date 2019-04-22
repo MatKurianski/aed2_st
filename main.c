@@ -87,23 +87,21 @@ void insere_elemento(ListaLigada *l, Vertice *v, No *pai, char* pos) {
 
     No* novo = criar_no(v);
     if(pos == "esq") {
-        if(pai->esq == NULL) pai->esq = l->inicio = novo;
+        if(pai->esq == NULL) l->inicio = novo;
         else {
-            No* aux = pai->esq;
-            pai->esq = novo;
-            novo->esq = aux;
-            novo->dir = pai;
-            aux->dir = novo;
+            novo->esq = pai->esq;
+            pai->esq->dir = novo;
         }
+        novo->dir = pai;
+        pai->esq = novo;
     } else if(pos == "dir") {
-        if(pai->dir == NULL) pai->dir = l->fim = novo;
+        if(pai->dir == NULL) l->fim = novo;
         else {
-            No* aux = pai->dir;
-            pai->dir = novo;
-            novo->dir = aux;
-            novo->esq = pai;
-            aux->esq = novo;
+            novo->dir = pai->dir;
+            pai->dir->esq = novo;
         }
+        novo->esq = pai;
+        pai->dir = novo;
     } else {
         puts("error");
         return;
