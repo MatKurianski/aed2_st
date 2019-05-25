@@ -1,4 +1,6 @@
 #include "structs.c"
+#include<stdio.h>
+#include<stdlib.h>
 
 // Algoritmos da Lista Ligada
 

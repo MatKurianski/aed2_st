@@ -29,6 +29,8 @@ typedef struct {
     Vertice* inicio;
 } Grafo;
 
+// LISTA LIGADA
+
 typedef struct estrutura {
     Vertice* vertice;
     struct estrutura* esq;
@@ -39,5 +41,17 @@ typedef struct {
     No* inicio;
     No* fim;
 } ListaLigada;
+
+// FILA
+
+typedef struct elem {
+  Vertice* vertice;
+  struct elem* prox;
+} elemento_fila;
+
+typedef struct {
+  elemento_fila* inicio;
+  elemento_fila* fim;
+} Fila;
 
 #endif
