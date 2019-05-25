@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<stdbool.h>
 
 #include "structs.c"
 
@@ -15,9 +16,14 @@ elemento_fila* f_criar_elemento(Vertice* v) {
   return novo;
 }
 
+bool f_eh_vazia(Fila f) {
+  if(f.inicio == NULL) return true;
+  return false;
+}
+
 void f_push(Fila* f, Vertice* v) {
   elemento_fila* novo = f_criar_elemento(v);
-  if(f->inicio == NULL) f->inicio = f->fim = novo;
+  if(f_eh_vazia(*f)) f->inicio = f->fim = novo;
   else {
     f->fim->prox = novo;
     f->fim = f->fim->prox;
@@ -25,9 +31,19 @@ void f_push(Fila* f, Vertice* v) {
 }
 
 elemento_fila* f_pop(Fila* f) {
-  if(f->fim == NULL) return NULL;
+  if(f_eh_vazia(*f)) return NULL;
   elemento_fila* popped = f->inicio;
-  popped->prox = NULL;
+  if(f->inicio == f->fim) f->fim = NULL;
   f->inicio = f->inicio->prox;
+  popped->prox = NULL;
   return popped;
 }
+
+// void imprimirFila(Fila f) {
+//   elemento_fila* e = f.inicio;
+//   printf("*****IMPRIMINDO FILA ATUAL*****\n\n");
+//   while(e) {
+//     printf("Elemento_fila: %i\n\n", e->vertice->chave);
+//     e = e->prox;
+//   }
+// }

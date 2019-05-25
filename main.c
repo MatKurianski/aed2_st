@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <stdbool.h>
+#include <limits.h>
 
 #include "structs.c"
 #include "lista_ligada.c"
+#include "queue.c"
 
 Vertice* criaVertice(int chave) {
     Vertice *v = (Vertice*) malloc(sizeof(Vertice));
@@ -107,43 +109,56 @@ ListaLigada ordenacao_topologica(Grafo g) {
   return l;
 }
 
+void BFS(Grafo g) {
+  Vertice* atual = g.inicio;
+  while(atual) {
+    atual->cor = BRANCO;
+    atual->ordem = INT_MAX;
+    atual->pai = NULL;
+    atual = atual->prox;
+  }
+
+  atual = g.inicio;
+  atual->cor = CINZA;
+  atual->ordem = 0;
+
+  Fila f;
+  f_inicializar(&f);
+  f_push(&f, atual);
+
+  while(!f_eh_vazia(f)) {
+    Vertice* vertice = f_pop(&f)->vertice;
+    // imprimirFila(f);
+    Aresta* aresta = vertice->vizinhos;
+
+    while(aresta) {
+      Vertice* vizinho = aresta->vizinho;
+      if(vizinho->cor == BRANCO) {
+        vizinho->cor = CINZA;
+        vizinho->ordem = vertice->ordem + 1;
+        vizinho->pai = vertice;
+        f_push(&f, vizinho);
+      }
+      aresta = aresta->prox;
+    }
+    printf("%i ", vertice->chave);
+    vertice->cor = PRETO;
+  }
+}
+
 int main() {
     Grafo g;
     inicializar_grafo(&g, 6);
 
     adiciona_aresta(g, 1, 2);
+    adiciona_aresta(g, 1, 3);
     adiciona_aresta(g, 1, 6);
 
-    adiciona_aresta(g, 2, 3);
-    adiciona_aresta(g, 2, 6);
-    adiciona_aresta(g, 2, 1);
+    adiciona_aresta(g, 2, 4);
+    adiciona_aresta(g, 2, 5);
 
-    adiciona_aresta(g, 3, 4);
-    adiciona_aresta(g, 3, 5);
-    adiciona_aresta(g, 3, 6);
-    adiciona_aresta(g, 3, 2);
+    BFS(g);
 
-    adiciona_aresta(g, 4, 5);
-    adiciona_aresta(g, 4, 6);
-    adiciona_aresta(g, 4, 3);
-
-    adiciona_aresta(g, 5, 3);
-    adiciona_aresta(g, 5, 4);
-
-    adiciona_aresta(g, 6, 1);
-    adiciona_aresta(g, 6, 2);
-    adiciona_aresta(g, 6, 3);
-    adiciona_aresta(g, 6, 4);
-
-    ListaLigada l = ordenacao_topologica(g);
-
-    No* atual = l.inicio;
-    
-    while(atual) {
-      Vertice* verticeAtual = atual->vertice;
-      printf("%i ", verticeAtual->chave);
-      atual = atual->dir;
-    }
-
+    printf("\n");
     return 0;
 }
